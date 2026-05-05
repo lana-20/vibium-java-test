@@ -339,7 +339,7 @@ public class VibiumJavaApiTests {
             page.evaluate("document.getElementById('ev').addEventListener('custom',e=>document.getElementById('ev').textContent='data')");
             page.find("#ev").dispatchEvent("custom", Map.of("detail", Map.of("val", "ok")));
         });
-        skip("el.highlight()", "BUG: Unknown command 'vibium:element.highlight'");
+        skip("el.highlight()", "BUG: Unknown command 'vibium:element.highlight' — issue #133");
         skip("el.dragTo(target)", "BUG: 'dragTo requires target parameter' despite correct Element arg");
         test("el.tap() does not throw", () -> {
             page.setContent("<html><body><button>tap me</button></body></html>");

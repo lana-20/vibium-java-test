@@ -229,7 +229,7 @@ public class VibiumBugHardening {
     // ── B5: el.highlight() ──────────────────────────────────────────────────
 
     static void hardenB5_highlight() throws Exception {
-        bug("B5", "el.highlight() — unknown BiDi command");
+        bug("B5", "el.highlight() — unknown BiDi command (issue #133)");
 
         String[] selectors = { "p", "div", "button", "a", "input" };
         String[] htmls = {
