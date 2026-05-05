@@ -63,7 +63,7 @@ public class VibiumBugHardening {
     // ── B1: page.waitForURL() ───────────────────────────────────────────────
 
     static void hardenB1_waitForURL() throws Exception {
-        bug("B1", "page.waitForURL() — all pattern formats rejected");
+        bug("B1", "page.waitForURL() — all pattern formats rejected (issue #129)");
 
         String[] patterns = {
             "https://example.com",

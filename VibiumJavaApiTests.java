@@ -70,7 +70,7 @@ public class VibiumJavaApiTests {
             page.reload();
             assertContains(page.url(), "example.com");
         });
-        skip("page.waitForURL()", "BUG: server rejects all pattern formats with 'pattern is required'");
+        skip("page.waitForURL()", "BUG: server rejects all pattern formats with 'pattern is required' — issue #129");
         test("page.waitForLoad()", () -> {
             page.go("https://example.com");
             page.waitForLoad();
