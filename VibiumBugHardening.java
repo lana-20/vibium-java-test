@@ -353,6 +353,43 @@ public class VibiumBugHardening {
             Object t = page.evaluate("typeof expFn4");
             if (!"function".equals(t)) throw new AssertionError("typeof: " + t);
         }, true);
+
+        // Invocation probes — confirm callback never fires even if we call the function
+        probe("expose → setContent → call → callback fires", () -> {
+            AtomicBoolean fired = new AtomicBoolean();
+            page.expose("expFn5", a -> { fired.set(true); return "ok"; });
+            page.setContent("<html><body></body></html>");
+            try { page.evaluate("expFn5()"); } catch (Exception ignored) {}
+            Thread.sleep(400);
+            if (!fired.get()) throw new AssertionError("callback never fired");
+        }, true);
+
+        probe("expose → setContent → return value reaches JS", () -> {
+            page.expose("expFn6", a -> "hello-from-java");
+            page.setContent("<html><body></body></html>");
+            Object result = page.evaluate("expFn6()");
+            if (!"hello-from-java".equals(result))
+                throw new AssertionError("got: " + result);
+        }, true);
+
+        probe("expose → setContent → args passed to Java callback", () -> {
+            AtomicReference<Object[]> received = new AtomicReference<>();
+            page.expose("expFn7", a -> { received.set(a); return null; });
+            page.setContent("<html><body></body></html>");
+            try { page.evaluate("expFn7('hello', 42)"); } catch (Exception ignored) {}
+            Thread.sleep(400);
+            Object[] got = received.get();
+            if (got == null || !Arrays.asList(got).contains("hello"))
+                throw new AssertionError("args not received: " + Arrays.toString(got));
+        }, true);
+
+        probe("expose → setContent inline script → callback fires", () -> {
+            AtomicBoolean fired = new AtomicBoolean();
+            page.expose("expFn8", a -> { fired.set(true); return "ok"; });
+            page.setContent("<html><body><script>expFn8();</script></body></html>");
+            Thread.sleep(400);
+            if (!fired.get()) throw new AssertionError("callback never fired from inline script");
+        }, true);
     }
 
     // ── B8: onError / collectErrors() ───────────────────────────────────────

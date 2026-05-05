@@ -38,11 +38,11 @@ Compiles and runs two single-file Java test programs — no Maven, no Gradle, no
 
 **Baseline: 136 pass / 0 fail / 26 skip**
 
-### VibiumBugHardening — 108 probes
+### VibiumBugHardening — 112 probes
 
 Tests each of the 10 confirmed bugs across 6 sites (example.com, books.toscrape.com, httpbin.org, en.wikipedia.org, var.parts, testtrack.org) and multiple page contexts.
 
-**Baseline: 108 confirmed / 0 unexpected**
+**Baseline: 112 confirmed / 0 unexpected**
 
 ## Known bugs
 
@@ -56,7 +56,7 @@ All 10 confirmed bugs are documented as `SKIP` entries in the regression suite w
 | B4 | `el.dispatchEvent()` | `onclick` and `addEventListener` both unresponsive; `el.click()` works | 11/11 |
 | B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" on all element types | 11/11 |
 | B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" despite correct `Element` arg | 12/12 |
-| B7 | `page.expose()` | function is `undefined` in page JS context after `expose()` in all orderings | 9/9 |
+| B7 | `page.expose()` | function is `undefined` in page JS context after `expose()` in all orderings | 13/13 |
 | B8 | `onError()` / `collectErrors()` | errors never forwarded — `setTimeout` throws, script injection, `Promise.reject`, `ErrorEvent` all miss | 12/12 |
 | B9 | `clock.setFixedTime()` / `pauseAt()` / `setSystemTime()` / `ClockOptions.time()` | "time is required" for all string formats; `ClockOptions.time()` silently ignored | 13/13 |
 | B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as [issue #128](https://github.com/VibiumDev/vibium/issues/128) | 6/6 sites |
