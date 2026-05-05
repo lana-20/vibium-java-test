@@ -823,9 +823,9 @@ public class VibiumJavaApiTests {
 
     static void runExpose() throws Exception {
         section("Expose");
-        skip("page.expose() registers function in page JS context", "BUG: typeof checkFn is 'undefined' after expose(); function not injected into current page");
-        skip("page.expose() callback receives JS arg", "BUG: exposed function returns null/Promise; evaluate() does not auto-resolve async return");
-        skip("page.expose() return value reaches JS", "BUG: same root cause — evaluate result is null instead of resolved Promise value");
+        skip("page.expose() registers function in page JS context", "BUG: typeof checkFn is 'undefined' after expose(); function not injected into current page — issue #135");
+        skip("page.expose() callback receives JS arg", "BUG: exposed function returns null/Promise; evaluate() does not auto-resolve async return — issue #135");
+        skip("page.expose() return value reaches JS", "BUG: same root cause — evaluate result is null instead of resolved Promise value — issue #135");
     }
 
     // ── Scroll ───────────────────────────────────────────────────────────────

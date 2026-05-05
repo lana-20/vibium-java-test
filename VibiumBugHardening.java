@@ -318,7 +318,7 @@ public class VibiumBugHardening {
     // ── B7: page.expose() ───────────────────────────────────────────────────
 
     static void hardenB7_expose() throws Exception {
-        bug("B7", "page.expose() — function not injected into page JS context");
+        bug("B7", "page.expose() — function not injected into page JS context (issue #135)");
 
         // Variant 1: expose → setContent → typeof
         probe("expose → setContent → typeof", () -> {
