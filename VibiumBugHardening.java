@@ -168,7 +168,7 @@ public class VibiumBugHardening {
     // ── B4: el.dispatchEvent() ──────────────────────────────────────────────
 
     static void hardenB4_dispatchEvent() throws Exception {
-        bug("B4", "el.dispatchEvent() — event handlers (onclick + addEventListener) unresponsive");
+        bug("B4", "el.dispatchEvent() — event handlers (onclick + addEventListener) unresponsive (issue #132)");
 
         // onclick attribute on div
         probe("div onclick attribute", () -> {

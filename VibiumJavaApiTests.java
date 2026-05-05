@@ -332,8 +332,8 @@ public class VibiumJavaApiTests {
             page.setContent("<html><body style='height:3000px'><p style='margin-top:2000px' id='far'>far</p></body></html>");
             page.find("#far").scrollIntoView();
         });
-        skip("el.dispatchEvent() click fires handler", "BUG: onclick and addEventListener both unresponsive to dispatchEvent; el.click() works for real clicks");
-        skip("el.dispatchEvent() click fires addEventListener", "BUG: same root cause as above");
+        skip("el.dispatchEvent() click fires handler", "BUG: onclick and addEventListener both unresponsive to dispatchEvent; el.click() works for real clicks — issue #132");
+        skip("el.dispatchEvent() click fires addEventListener", "BUG: same root cause as above — issue #132");
         test("el.dispatchEvent(type, data) does not throw", () -> {
             page.setContent("<html><body><div id='ev'>x</div></body></html>");
             page.evaluate("document.getElementById('ev').addEventListener('custom',e=>document.getElementById('ev').textContent='data')");
