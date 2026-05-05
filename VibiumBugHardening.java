@@ -262,7 +262,7 @@ public class VibiumBugHardening {
     // ── B6: el.dragTo() ─────────────────────────────────────────────────────
 
     static void hardenB6_dragTo() throws Exception {
-        bug("B6", "el.dragTo() — 'dragTo requires target parameter' with correct Element arg");
+        bug("B6", "el.dragTo() — 'dragTo requires target parameter' with correct Element arg (issue #134)");
 
         // Different element combinations
         String[][] pairs = {
