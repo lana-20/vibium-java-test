@@ -534,7 +534,7 @@ public class VibiumBugHardening {
     // ── B10: page.setHeaders() ──────────────────────────────────────────────
 
     static void hardenB10_setHeaders() throws Exception {
-        bug("B10", "page.setHeaders() — server deadlock on subsequent page.go() (same root as route #128)");
+        bug("B10", "page.setHeaders() — server deadlock on subsequent page.go() (same root cause as issue #128)");
 
         // Test deadlock on multiple sites
         for (String site : SITES) {
