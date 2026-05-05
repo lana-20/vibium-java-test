@@ -264,23 +264,21 @@ public class VibiumBugHardening {
     static void hardenB6_dragTo() throws Exception {
         bug("B6", "el.dragTo() — 'dragTo requires target parameter' with correct Element arg (issue #134)");
 
-        // Different element combinations
+        // setContent with explicit draggable="true" elements
         String[][] pairs = {
             {"#a", "#b"},
-            {"button:first-child", "button:last-child"},
             {"div.src", "div.dst"}
         };
         String[] htmls = {
-            "<html><body><div id='a' style='width:50px;height:50px'>A</div><div id='b' style='width:50px;height:50px'>B</div></body></html>",
-            "<html><body><button>Btn1</button><button>Btn2</button></body></html>",
-            "<html><body><div class='src' style='width:50px;height:50px'>S</div><div class='dst' style='width:50px;height:50px'>D</div></body></html>"
+            "<html><body><div id='a' draggable='true' style='width:50px;height:50px'>A</div><div id='b' style='width:50px;height:50px'>B</div></body></html>",
+            "<html><body><div class='src' draggable='true' style='width:50px;height:50px'>S</div><div class='dst' style='width:50px;height:50px'>D</div></body></html>"
         };
 
         for (int i = 0; i < pairs.length; i++) {
             final String srcSel = pairs[i][0];
             final String dstSel = pairs[i][1];
             final String html = htmls[i];
-            probe("dragTo " + srcSel + " → " + dstSel, () -> {
+            probe("setContent draggable: " + srcSel + " → " + dstSel, () -> {
                 page.setContent(html);
                 Element src = page.find(srcSel);
                 Element dst = page.find(dstSel);
@@ -288,8 +286,27 @@ public class VibiumBugHardening {
             }, true);
         }
 
+        // Dedicated drag-and-drop demo pages with native draggable elements
+        String[][] demoPairs = {
+            {"https://testtrack.org/drag-drop-demo",                        "#draggable-1",  "#container1"},
+            {"https://the-internet.herokuapp.com/drag_and_drop",            "#column-a",     "#column-b"},
+            {"https://demoqa.com/droppable",                                "#draggable",    "#droppable"},
+            {"https://www.w3schools.com/html/html5_draganddrop.asp",        "#img1",         "#div2"}
+        };
+
+        for (String[] trio : demoPairs) {
+            final String site = trio[0], srcSel = trio[1], dstSel = trio[2];
+            probe("dragTo demo [" + domain(site) + "] " + srcSel + " → " + dstSel, () -> {
+                page.go(site);
+                Element src = page.find(srcSel);
+                Element dst = page.find(dstSel);
+                src.dragTo(dst);
+            }, true);
+        }
+
+        // General sites — any two links
         for (String site : SITES) {
-            probe("dragTo on real page links [" + domain(site) + "]", () -> {
+            probe("dragTo links [" + domain(site) + "]", () -> {
                 page.go(site);
                 List<Element> links = page.findAll("a");
                 if (links.size() < 2) throw new AssertionError("need 2 <a> elements");

@@ -4,6 +4,8 @@
 
 `el.dragTo(Element target)` always throws `"dragTo requires 'target' parameter"` even when called with a valid, live `Element` reference obtained from the same page. The Java client accepts the argument without complaint, but the server rejects the request because the target element is not being serialized into the BiDi request body correctly.
 
+Tested on `draggable="true"` elements in synthetic pages and on 4 dedicated drag-and-drop demo sites with native draggable widgets — all fail identically.
+
 ## Environment
 
 - Vibium Java client: `com.vibium:vibium:26.3.18`
@@ -23,7 +25,7 @@ public class Repro {
 
         page.setContent("""
             <html><body>
-              <div id="src" style="width:50px;height:50px">A</div>
+              <div id="src" draggable="true" style="width:50px;height:50px">A</div>
               <div id="dst" style="width:50px;height:50px">B</div>
             </body></html>
         """);
@@ -42,35 +44,33 @@ public class Repro {
 com.vibium.errors.VibiumException: dragTo requires 'target' parameter
 ```
 
-## All element pair variants tested
+## Synthetic page variants
 
-Both elements are resolved via `page.find()` on the same page immediately before the call:
+Both elements resolved via `page.find()` immediately before the call; source has `draggable="true"`:
 
 | Source | Target | Result |
 |---|---|---|
-| `#a` | `#b` | `dragTo requires 'target' parameter` |
-| `button:first-child` | `button:last-child` | `dragTo requires 'target' parameter` |
-| `div.src` | `div.dst` | `dragTo requires 'target' parameter` |
+| `#a` (`draggable="true"`) | `#b` | `dragTo requires 'target' parameter` |
+| `div.src` (`draggable="true"`) | `div.dst` | `dragTo requires 'target' parameter` |
 
-## Confirmed across sites
+## Dedicated drag-and-drop demo sites
 
-Tested by dragging the first `<a>` element to the second on each live page:
+Four different drag-and-drop implementations tested with the correct semantic source and drop-target elements for each page:
 
-| Site | Result |
-|---|---|
-| `https://books.toscrape.com` | `dragTo requires 'target' parameter` |
-| `https://httpbin.org` | `dragTo requires 'target' parameter` |
-| `https://en.wikipedia.org` | `dragTo requires 'target' parameter` |
-| `https://var.parts` | `dragTo requires 'target' parameter` |
-| `https://testtrack.org` | `dragTo requires 'target' parameter` |
+| Site | Source | Target | Result |
+|---|---|---|---|
+| `testtrack.org/drag-drop-demo` | `#draggable-1` | `#container1` | `dragTo requires 'target' parameter` |
+| `the-internet.herokuapp.com/drag_and_drop` | `#column-a` | `#column-b` | `dragTo requires 'target' parameter` |
+| `demoqa.com/droppable` | `#draggable` | `#droppable` | `dragTo requires 'target' parameter` |
+| `www.w3schools.com` (HTML5 drag-drop demo) | `#img1` | `#div2` | `dragTo requires 'target' parameter` |
 
-(`example.com` was excluded — it only has one `<a>` element.)
+The error is identical across HTML5 native drag-and-drop, jQuery UI draggable/droppable, and custom implementations. It fires before any drag mechanics are attempted, confirming this is a parameter serialization failure in the Java client, not a page-compatibility issue.
 
 ## Likely root cause
 
-The error comes from the server, not the client. The Java client calls `dragTo(Element target)` and constructs the BiDi request, but the `target` field is either missing from the request body, sent as `null`, or encoded under the wrong key. The server receives the request, validates that `target` is required, finds it absent, and rejects the call.
+The error originates from the server. The Java client calls `dragTo(Element target)` and constructs the BiDi request, but the `target` field is either missing from the request body, sent as `null`, or encoded under the wrong key. The server receives the request, validates that `target` is required, finds it absent, and rejects the call.
 
-This is the same class of serialization bug as B1 (`waitForURL` — `pattern is required`): the Java client has the right method signature but fails to include the argument in the outgoing request.
+This is the same class of serialization bug as B1 (`waitForURL` — `"pattern is required"`): the Java client has the correct method signature but fails to include the argument in the outgoing request.
 
 ## Workaround
 
@@ -88,19 +88,17 @@ page.mouse().up();
 ## Test suite references
 
 - Regression suite skip: [`VibiumJavaApiTests.java#L343`](https://github.com/lana-20/vibium-java-tests/blob/main/VibiumJavaApiTests.java#L343)
-- Hardening probes (3 element pairs + 5 real sites): [`VibiumBugHardening.java#L264`](https://github.com/lana-20/vibium-java-tests/blob/main/VibiumBugHardening.java#L264)
+- Hardening probes: [`VibiumBugHardening.java#L264`](https://github.com/lana-20/vibium-java-tests/blob/main/VibiumBugHardening.java#L264)
 
 ## Hardening results
 
-Reproduced 9 / 9 probes with 0 unexpected passes.
+Reproduced 6 / 6 targeted probes with 0 unexpected passes.
 
 ```
-dragTo #a → #b                                 BUG  dragTo requires 'target' parameter
-dragTo button:first-child → button:last-child  BUG  dragTo requires 'target' parameter
-dragTo div.src → div.dst                       BUG  dragTo requires 'target' parameter
-dragTo on real page links [books.toscrape.com] BUG  dragTo requires 'target' parameter
-dragTo on real page links [httpbin.org]        BUG  dragTo requires 'target' parameter
-dragTo on real page links [en.wikipedia.org]   BUG  dragTo requires 'target' parameter
-dragTo on real page links [var.parts]          BUG  dragTo requires 'target' parameter
-dragTo on real page links [testtrack.org]      BUG  dragTo requires 'target' parameter
+setContent draggable: #a → #b                                   BUG  dragTo requires 'target' parameter
+setContent draggable: div.src → div.dst                         BUG  dragTo requires 'target' parameter
+dragTo demo [testtrack.org] #draggable-1 → #container1          BUG  dragTo requires 'target' parameter
+dragTo demo [the-internet.herokuapp.com] #column-a → #column-b  BUG  dragTo requires 'target' parameter
+dragTo demo [demoqa.com] #draggable → #droppable                BUG  dragTo requires 'target' parameter
+dragTo demo [www.w3schools.com] #img1 → #div2                   BUG  dragTo requires 'target' parameter
 ```

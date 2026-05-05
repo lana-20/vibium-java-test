@@ -125,7 +125,7 @@ Total confirmed: 105 / 105
 | B3 | `page.waitForFunction()` | times out even for trivially-true expressions (`true`, `1+1===2`) | 12/12 |
 | B4 | `el.dispatchEvent()` | onclick and addEventListener both unresponsive; `el.click()` works | 11/11 |
 | B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" on all elements | 11/11 |
-| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct Element arg | 9/9 |
+| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct Element arg | 12/12 |
 | B7 | `page.expose()` | function is `undefined` in all page contexts after expose | 9/9 |
 | B8 | `onError()`, `collectErrors()` | uncaught errors never forwarded (setTimeout, script injection, Promise.reject, ErrorEvent) | 12/12 |
 | B9 | `clock.setFixedTime()`, `clock.pauseAt()`, `clock.setSystemTime()`, `ClockOptions.time()` | "time is required" for all string formats; ClockOptions.time() silently ignored | 13/13 |
@@ -138,7 +138,7 @@ Confirmed across two independent runs:
 | Suite | Pass | Fail | Skip | Total |
 |---|---|---|---|---|
 | VibiumJavaApiTests | 136 | 0 | 26 | 162 |
-| VibiumBugHardening | 105 confirmed | 0 unexpected | — | 105 |
+| VibiumBugHardening | 108 confirmed | 0 unexpected | — | 108 |
 
 ## Input
 

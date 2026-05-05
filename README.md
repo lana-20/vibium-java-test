@@ -39,7 +39,7 @@ javac -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" \
 java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumJavaApiTests
 ```
 
-**Bug hardening** — all 10 bugs × 6 sites (105 confirmed, ~15 min):
+**Bug hardening** — all 10 bugs × 6 sites (108 confirmed, ~15 min):
 ```sh
 java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumBugHardening
 ```
@@ -93,7 +93,7 @@ All 10 bugs reproduced across 6 sites (example.com, books.toscrape.com, httpbin.
 | B3 | `page.waitForFunction()` | times out even for `true` and `1+1===2` | 12/12 |
 | B4 | `el.dispatchEvent()` | `onclick` and `addEventListener` both unresponsive | 11/11 |
 | B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" | 11/11 |
-| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct arg | 9/9 |
+| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct arg | 12/12 |
 | B7 | `page.expose()` | function `undefined` in page JS context in all orderings | 9/9 |
 | B8 | `onError()` / `collectErrors()` | errors never forwarded — `setTimeout`, script injection, `Promise.reject`, `ErrorEvent` all miss | 12/12 |
 | B9 | `clock.setFixedTime()` / `pauseAt()` / `setSystemTime()` / `ClockOptions.time()` | "time is required" for all string formats | 13/13 |
