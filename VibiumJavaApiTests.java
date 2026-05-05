@@ -90,7 +90,7 @@ public class VibiumJavaApiTests {
             page.addStyle("p { color: red; }");
         });
         // addScript does not run in current page nor persist across navigation — use context.addInitScript() instead
-        skip("page.addScript(js)", "BUG: script not available in current or subsequent page contexts; use context.addInitScript()");
+        skip("page.addScript(js)", "BUG: script not available in current or subsequent page contexts; use context.addInitScript() — issue #130");
     }
 
     // ── Evaluate ────────────────────────────────────────────────────────────

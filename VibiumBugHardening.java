@@ -96,7 +96,7 @@ public class VibiumBugHardening {
     // ── B2: page.addScript() ────────────────────────────────────────────────
 
     static void hardenB2_addScript() throws Exception {
-        bug("B2", "page.addScript() — script not available in any context");
+        bug("B2", "page.addScript() — script not available in any context (issue #130)");
 
         // Variant 1: evaluate immediately after addScript in same page
         for (String site : SITES) {
