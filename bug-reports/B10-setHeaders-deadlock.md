@@ -1,6 +1,6 @@
-# Bug: `page.setHeaders()` causes `page.go()` to deadlock permanently (Java client)
+# Bug: `page.route()` and `page.setHeaders()` cause `page.go()` to deadlock permanently — server-side network interception blocks navigation (Java client)
 
-> **Note:** This is the same root cause as [issue #128 (`page.route()` deadlock)](https://github.com/VibiumDev/vibium/issues/128). The additional findings below were posted as a comment on that issue. A separate issue was not filed.
+> **Note:** This is documented in [issue #128](https://github.com/VibiumDev/vibium/issues/128). The `page.setHeaders()` findings below were posted as a comment on that issue. A separate issue was not filed.
 
 ## Summary
 
@@ -37,7 +37,7 @@ public class Repro {
 com.vibium.errors.VibiumTimeoutException: Timeout after 60000ms waiting for response to vibium:page.navigate
 ```
 
-## Key distinction from issue #128
+## Key distinction
 
 `page.setHeaders()` deadlocks even though it does not register a route handler — it has no fulfillment or continuation logic. The deadlock is triggered purely by enabling network interception mode, which both `page.route()` and `page.setHeaders()` do. `page.setHeaders()` alone (without a subsequent `page.go()`) does not deadlock.
 
