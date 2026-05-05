@@ -6,7 +6,7 @@ A Claude Code skill that runs the [Vibium](https://github.com/VibiumDev/vibium) 
 
 ## What it does
 
-Compiles and runs two single-file Java test programs — no Maven, no Gradle, no IDE required. Labels each test `PASS`, `FAIL`, or `SKIP` (with bug notes), then prints a summary table. A second mode hardens each confirmed bug across 4 real sites and multiple page contexts.
+Compiles and runs two single-file Java test programs — no Maven, no Gradle, no IDE required. Labels each test `PASS`, `FAIL`, or `SKIP` (with bug notes), then prints a summary table. A second mode hardens each confirmed bug across 6 real sites and multiple page contexts.
 
 ## Coverage
 
@@ -38,11 +38,11 @@ Compiles and runs two single-file Java test programs — no Maven, no Gradle, no
 
 **Baseline: 136 pass / 0 fail / 26 skip**
 
-### VibiumBugHardening — 87 probes
+### VibiumBugHardening — 105 probes
 
-Tests each of the 10 confirmed bugs across 4 sites (example.com, books.toscrape.com, httpbin.org, en.wikipedia.org) and multiple page contexts.
+Tests each of the 10 confirmed bugs across 6 sites (example.com, books.toscrape.com, httpbin.org, en.wikipedia.org, var.parts, testtrack.org) and multiple page contexts.
 
-**Baseline: 87 confirmed / 0 unexpected**
+**Baseline: 105 confirmed / 0 unexpected**
 
 ## Known bugs
 
@@ -51,15 +51,15 @@ All 10 confirmed bugs are documented as `SKIP` entries in the regression suite w
 | Bug | Method(s) | Error | Probes |
 |---|---|---|---|
 | B1 | `page.waitForURL()` | "pattern is required" — all 8 format variants rejected | 8/8 |
-| B2 | `page.addScript()` | script value `null` in all contexts; `context.addInitScript()` works | 9/9 |
-| B3 | `page.waitForFunction()` | times out even for `true` and `1+1===2` | 10/10 |
-| B4 | `el.dispatchEvent()` | `onclick` and `addEventListener` both unresponsive; `el.click()` works | 9/9 |
-| B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" on all element types | 9/9 |
-| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" despite correct `Element` arg | 7/7 |
-| B7 | `page.expose()` | function is `undefined` in page JS context after `expose()` in all orderings | 7/7 |
-| B8 | `onError()` / `collectErrors()` | errors never forwarded — `setTimeout` throws, script injection, `Promise.reject`, `ErrorEvent` all miss | 10/10 |
+| B2 | `page.addScript()` | script value `null` in all contexts; `context.addInitScript()` works | 13/13 |
+| B3 | `page.waitForFunction()` | times out even for `true` and `1+1===2` | 12/12 |
+| B4 | `el.dispatchEvent()` | `onclick` and `addEventListener` both unresponsive; `el.click()` works | 11/11 |
+| B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" on all element types | 11/11 |
+| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" despite correct `Element` arg | 9/9 |
+| B7 | `page.expose()` | function is `undefined` in page JS context after `expose()` in all orderings | 9/9 |
+| B8 | `onError()` / `collectErrors()` | errors never forwarded — `setTimeout` throws, script injection, `Promise.reject`, `ErrorEvent` all miss | 12/12 |
 | B9 | `clock.setFixedTime()` / `pauseAt()` / `setSystemTime()` / `ClockOptions.time()` | "time is required" for all string formats; `ClockOptions.time()` silently ignored | 13/13 |
-| B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as [issue #128](https://github.com/VibiumDev/vibium/issues/128) | 4/4 sites |
+| B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as [issue #128](https://github.com/VibiumDev/vibium/issues/128) | 6/6 sites |
 
 ## Files
 
@@ -79,7 +79,7 @@ All 10 confirmed bugs are documented as `SKIP` entries in the regression suite w
 
 - Java 21+
 - `vibium-26.3.18.jar` and `gson-2.11.0.jar` in `~/vibium-java-tests/`
-- Network access (navigation tests hit example.com, httpbin.org, books.toscrape.com, en.wikipedia.org)
+- Network access (navigation tests hit example.com, httpbin.org, books.toscrape.com, en.wikipedia.org, var.parts, testtrack.org)
 
 ## Running manually
 
@@ -116,7 +116,7 @@ cp ~/vibium-java-tests/SKILL.md ~/.claude/skills/vibium-java-test/
 
 Then add to `~/.claude/CLAUDE.md`:
 ```
-- `/vibium-java-test` — Vibium Java API regression suite + bug hardening (10 bugs × 4 sites)
+- `/vibium-java-test` — Vibium Java API regression suite + bug hardening (10 bugs × 6 sites)
 ```
 
 ## Usage

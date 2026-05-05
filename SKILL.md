@@ -6,7 +6,7 @@ description: Run the Vibium Java API regression suite or bug hardening suite. Te
 # Vibium Java API Test Suite
 
 Tests all public methods in the Vibium Java language bindings (`com.vibium:vibium:26.3.18`).
-Two modes: full regression suite (`VibiumJavaApiTests`) and bug hardening across 4 sites (`VibiumBugHardening`).
+Two modes: full regression suite (`VibiumJavaApiTests`) and bug hardening across 6 sites (`VibiumBugHardening`).
 
 ## Repository
 
@@ -71,7 +71,7 @@ javac -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumJavaApiTests.java VibiumB
 java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumJavaApiTests
 ```
 
-**Bug hardening (all 10 bugs, 4 sites):**
+**Bug hardening (all 10 bugs, 6 sites):**
 ```sh
 java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumBugHardening
 ```
@@ -110,10 +110,10 @@ TOTAL                162    136   0     26
 For VibiumBugHardening, report each bug section with confirmed/unexpected counts:
 ```
 B1  page.waitForURL()            8 probes — all BUG (confirmed)
-B2  page.addScript()             9 probes — all BUG (confirmed)
+B2  page.addScript()             13 probes — all BUG (confirmed)
 ...
 ──────────────────────────────────
-Total confirmed: 87 / 87
+Total confirmed: 105 / 105
 ```
 
 ## Known bugs (skipped in regression suite)
@@ -121,15 +121,15 @@ Total confirmed: 87 / 87
 | Bug | Method(s) | Error | Hardening probes |
 |---|---|---|---|
 | B1 | `page.waitForURL()` | "pattern is required" for all 8 format variants | 8/8 |
-| B2 | `page.addScript()` | script value null in all contexts (use `context.addInitScript()` instead) | 9/9 |
-| B3 | `page.waitForFunction()` | times out even for trivially-true expressions (`true`, `1+1===2`) | 10/10 |
-| B4 | `el.dispatchEvent()` | onclick and addEventListener both unresponsive; `el.click()` works | 9/9 |
-| B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" on all elements | 9/9 |
-| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct Element arg | 7/7 |
-| B7 | `page.expose()` | function is `undefined` in all page contexts after expose | 7/7 |
-| B8 | `onError()`, `collectErrors()` | uncaught errors never forwarded (setTimeout, script injection, Promise.reject, ErrorEvent) | 10/10 |
+| B2 | `page.addScript()` | script value null in all contexts (use `context.addInitScript()` instead) | 13/13 |
+| B3 | `page.waitForFunction()` | times out even for trivially-true expressions (`true`, `1+1===2`) | 12/12 |
+| B4 | `el.dispatchEvent()` | onclick and addEventListener both unresponsive; `el.click()` works | 11/11 |
+| B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" on all elements | 11/11 |
+| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct Element arg | 9/9 |
+| B7 | `page.expose()` | function is `undefined` in all page contexts after expose | 9/9 |
+| B8 | `onError()`, `collectErrors()` | uncaught errors never forwarded (setTimeout, script injection, Promise.reject, ErrorEvent) | 12/12 |
 | B9 | `clock.setFixedTime()`, `clock.pauseAt()`, `clock.setSystemTime()`, `ClockOptions.time()` | "time is required" for all string formats; ClockOptions.time() silently ignored | 13/13 |
-| B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as route issue #128 | 4/4 |
+| B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as route issue #128 | 7/7 |
 
 ## Baseline
 
@@ -138,7 +138,7 @@ Confirmed across two independent runs:
 | Suite | Pass | Fail | Skip | Total |
 |---|---|---|---|---|
 | VibiumJavaApiTests | 136 | 0 | 26 | 162 |
-| VibiumBugHardening | 87 confirmed | 0 unexpected | — | 87 |
+| VibiumBugHardening | 105 confirmed | 0 unexpected | — | 105 |
 
 ## Input
 

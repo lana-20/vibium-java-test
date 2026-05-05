@@ -25,7 +25,9 @@ public class VibiumBugHardening {
         "https://example.com",
         "https://books.toscrape.com",
         "https://httpbin.org",
-        "https://en.wikipedia.org"
+        "https://en.wikipedia.org",
+        "https://var.parts",
+        "https://testtrack.org"
     );
 
     record Result(String variant, String outcome) {}

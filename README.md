@@ -7,7 +7,7 @@ Vibium Java API regression suite and bug hardening harness for [`com.vibium:vibi
 | File | Description |
 |---|---|
 | `VibiumJavaApiTests.java` | Full API regression suite — 162 tests across 24 sections |
-| `VibiumBugHardening.java` | Hardens all 10 confirmed bugs across 4 sites and multiple page contexts |
+| `VibiumBugHardening.java` | Hardens all 10 confirmed bugs across 6 sites and multiple page contexts |
 | `NetworkDemo.java` | Network module demo: fetches a kitten, injects it into all images on a page, saves a screenshot |
 | `RouteDeadlockRepro.java` | Minimal reproducer for the `page.route()` server deadlock ([issue #128](https://github.com/VibiumDev/vibium/issues/128)) |
 | `vibium-route-deadlock-bug.md` | Full bug report filed at VibiumDev/vibium#128 |
@@ -39,7 +39,7 @@ javac -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" \
 java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumJavaApiTests
 ```
 
-**Bug hardening** — all 10 bugs × 4 sites (87 confirmed, ~10 min):
+**Bug hardening** — all 10 bugs × 6 sites (105 confirmed, ~15 min):
 ```sh
 java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumBugHardening
 ```
@@ -84,17 +84,17 @@ java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" RouteDeadlockRepro
 
 ## Confirmed bugs (VibiumBugHardening)
 
-All 10 bugs reproduced across 4 sites (example.com, books.toscrape.com, httpbin.org, en.wikipedia.org) with zero unexpected passes.
+All 10 bugs reproduced across 6 sites (example.com, books.toscrape.com, httpbin.org, en.wikipedia.org, var.parts, testtrack.org) with zero unexpected passes.
 
 | Bug | Method(s) | Error | Probes |
 |---|---|---|---|
 | B1 | `page.waitForURL()` | "pattern is required" — all format variants rejected | 8/8 |
-| B2 | `page.addScript()` | script `null` in all contexts; use `context.addInitScript()` | 9/9 |
-| B3 | `page.waitForFunction()` | times out even for `true` and `1+1===2` | 10/10 |
-| B4 | `el.dispatchEvent()` | `onclick` and `addEventListener` both unresponsive | 9/9 |
-| B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" | 9/9 |
-| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct arg | 7/7 |
-| B7 | `page.expose()` | function `undefined` in page JS context in all orderings | 7/7 |
-| B8 | `onError()` / `collectErrors()` | errors never forwarded — `setTimeout`, script injection, `Promise.reject`, `ErrorEvent` all miss | 10/10 |
+| B2 | `page.addScript()` | script `null` in all contexts; use `context.addInitScript()` | 13/13 |
+| B3 | `page.waitForFunction()` | times out even for `true` and `1+1===2` | 12/12 |
+| B4 | `el.dispatchEvent()` | `onclick` and `addEventListener` both unresponsive | 11/11 |
+| B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" | 11/11 |
+| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct arg | 9/9 |
+| B7 | `page.expose()` | function `undefined` in page JS context in all orderings | 9/9 |
+| B8 | `onError()` / `collectErrors()` | errors never forwarded — `setTimeout`, script injection, `Promise.reject`, `ErrorEvent` all miss | 12/12 |
 | B9 | `clock.setFixedTime()` / `pauseAt()` / `setSystemTime()` / `ClockOptions.time()` | "time is required" for all string formats | 13/13 |
-| B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as [#128](https://github.com/VibiumDev/vibium/issues/128) | 4/4 sites |
+| B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as [#128](https://github.com/VibiumDev/vibium/issues/128) | 6/6 sites |
