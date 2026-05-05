@@ -481,7 +481,7 @@ public class VibiumBugHardening {
     // ── B9: clock time methods ───────────────────────────────────────────────
 
     static void hardenB9_clockTime() throws Exception {
-        bug("B9", "clock time methods — ISO string rejected with 'time is required'");
+        bug("B9", "clock time methods — ISO string rejected with 'time is required' (issue #137)");
 
         // setFixedTime with different formats
         String[] formats = {

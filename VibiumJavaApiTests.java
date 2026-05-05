@@ -692,8 +692,8 @@ public class VibiumJavaApiTests {
             page.setContent("<html><body></body></html>");
             page.clock().install();
         });
-        skip("clock.setFixedTime(isoString)", "BUG: server rejects ISO string with 'time is required'");
-        skip("clock.install(ClockOptions.time)", "BUG: ClockOptions.time() value is ignored — date stays at system time");
+        skip("clock.setFixedTime(isoString)", "BUG: server rejects ISO string with 'time is required' — issue #137");
+        skip("clock.install(ClockOptions.time)", "BUG: ClockOptions.time() value is ignored — date stays at system time — issue #137");
         test("clock.fastForward(1h) advances hour by 1", () -> {
             page.setContent("<html><body></body></html>");
             page.clock().install();
@@ -707,8 +707,8 @@ public class VibiumJavaApiTests {
             page.clock().install();
             page.clock().runFor(500);
         });
-        skip("clock.pauseAt(isoString)", "BUG: server rejects ISO string with 'time is required'");
-        skip("clock.setSystemTime(isoString)", "BUG: server rejects ISO string with 'time is required'");
+        skip("clock.pauseAt(isoString)", "BUG: server rejects ISO string with 'time is required' — issue #137");
+        skip("clock.setSystemTime(isoString)", "BUG: server rejects ISO string with 'time is required' — issue #137");
         test("clock.setTimezone() does not throw", () -> {
             page.setContent("<html><body></body></html>");
             page.clock().install();
