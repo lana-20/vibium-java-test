@@ -508,8 +508,8 @@ public class VibiumJavaApiTests {
 
     static void runErrors() throws Exception {
         section("Error Events");
-        skip("onError() receives uncaught script error", "BUG: dynamically injected script errors not forwarded to onError listener; window.onerror and BiDi event unclear");
-        skip("collectErrors() / errors() accumulates errors", "BUG: same root cause as onError — errors not captured");
+        skip("onError() receives uncaught script error", "BUG: dynamically injected script errors not forwarded to onError listener; window.onerror and BiDi event unclear — issue #136");
+        skip("collectErrors() / errors() accumulates errors", "BUG: same root cause as onError — errors not captured — issue #136");
     }
 
     // ── Network Listeners ────────────────────────────────────────────────────

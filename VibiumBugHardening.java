@@ -395,7 +395,7 @@ public class VibiumBugHardening {
     // ── B8: onError / collectErrors() ───────────────────────────────────────
 
     static void hardenB8_onError() throws Exception {
-        bug("B8", "onError() / collectErrors() — uncaught errors never forwarded");
+        bug("B8", "onError() / collectErrors() — uncaught errors never forwarded (issue #136)");
 
         // Different ways to trigger uncaught errors
 
