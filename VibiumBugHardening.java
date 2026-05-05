@@ -131,7 +131,7 @@ public class VibiumBugHardening {
     // ── B3: page.waitForFunction() ──────────────────────────────────────────
 
     static void hardenB3_waitForFunction() throws Exception {
-        bug("B3", "page.waitForFunction() — times out for all expressions");
+        bug("B3", "page.waitForFunction() — times out for all expressions (issue #131)");
 
         String[] exprs = {
             "true",

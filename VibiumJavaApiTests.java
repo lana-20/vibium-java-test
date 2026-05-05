@@ -159,8 +159,8 @@ public class VibiumJavaApiTests {
             page.evaluate("setTimeout(()=>{document.body.innerHTML='<p id=late>hi</p>'},150)");
             assertNotNull(page.waitFor("#late"));
         });
-        skip("page.waitForFunction() already-true condition", "BUG: times out even when expression is already true before call");
-        skip("page.waitForFunction() async condition", "BUG: same root cause — waitForFunction does not evaluate the expression correctly");
+        skip("page.waitForFunction() already-true condition", "BUG: times out even when expression is already true before call — issue #131");
+        skip("page.waitForFunction() async condition", "BUG: same root cause — waitForFunction does not evaluate the expression correctly — issue #131");
     }
 
     // ── Element State ────────────────────────────────────────────────────────
