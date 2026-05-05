@@ -1,3 +1,4 @@
 *.class
 *.jar
 injected.png
+.DS_Store
