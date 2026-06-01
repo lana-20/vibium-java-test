@@ -8,7 +8,7 @@ description: Run the Vibium Java API regression suite or bug hardening suite. Te
 Tests all public methods in the Vibium Java language bindings (`com.vibium:vibium:26.5.31`).
 Two modes: full regression suite (`VibiumJavaApiTests`) and bug hardening across 6 sites (`VibiumBugHardening`).
 
-**v26.5.31 status:** 136 PASS / 0 FAIL / 26 SKIP (suite source not yet updated — B4/B5/B6 SKIP annotations still in code). Hardening: 52 confirmed / 60 unexpected passes. B4, B5, B6 fully fixed; B1, B2, B8, B9 partially fixed; B3, B7, B10 still broken.
+**v26.5.31 status:** 140 PASS / 0 FAIL / 22 SKIP. B4/B5/B6 SKIP annotations removed, tests now active and passing. Hardening: 52 confirmed / 60 unexpected passes. B1, B2, B8, B9 partially fixed; B3, B7, B10 still broken.
 
 **macOS PATH note:** on macOS the Python vibium client can shadow the npm binary. Prefix PATH when running: `PATH="/usr/local/bin:$PATH" java -cp ...`
 
@@ -34,9 +34,9 @@ cd ~/vibium-java-tests
 
 ## Compile
 
-Check if `.class` files are present and newer than `.java` sources. If not, compile both:
+Sources live in `src/`; compiled classes go to `out/`. Recompile when sources change:
 ```sh
-javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" src/VibiumJavaApiTests.java src/VibiumBugHardening.java
+javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" -d out src/VibiumJavaApiTests.java src/VibiumBugHardening.java
 ```
 
 ## Sections covered (VibiumJavaApiTests)
@@ -72,18 +72,18 @@ javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" src/VibiumJavaApiTests.java src
 
 **Full regression suite:**
 ```sh
-PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumJavaApiTests
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumJavaApiTests
 ```
 
 **Bug hardening (all 10 bugs, 6 sites):**
 ```sh
-PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening
 ```
 
 **Single bug hardening (B1–B10):**
 Run VibiumBugHardening and filter output to that bug's section:
 ```sh
-PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening 2>&1 | awk '/╔══ B<N>:/{p=1} /╔══ B/{if(p && !/B<N>:/)p=0} p'
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening 2>&1 | awk '/╔══ B<N>:/{p=1} /╔══ B/{if(p && !/B<N>:/)p=0} p'
 ```
 Replace `<N>` with the bug number (1–10).
 
@@ -135,14 +135,14 @@ Total confirmed: 105 / 105
 | B9 | `clock.setFixedTime()`, `clock.pauseAt()`, `clock.setSystemTime()`, `ClockOptions.time()` | **PARTIAL** (#137/#167) | ISO-8601 and epoch-ms strings accepted; human-readable `"Month DD, YYYY"` intentionally unsupported; `ClockOptions.time()` value still ignored (off by 1 year) — genuine remaining bug |
 | B10 | `page.setHeaders()` | **DEFERRED** (#128) | Threading deadlock; same root cause as route/dialog deadlock |
 
-**Suite source update needed:** `VibiumJavaApiTests.java` still has SKIP annotations for B4, B5, B6 — these should be converted to active tests now that the bugs are fixed. Expected new baseline: ~141 PASS / 0 FAIL / ~21 SKIP.
+B4, B5, B6 SKIP annotations removed — tests now active and passing.
 
 ## Baseline
 
 | Suite | Version | Pass | Fail | Skip | Total | Notes |
 |---|---|---|---|---|---|---|
 | VibiumJavaApiTests | v26.3.18 | 136 | 0 | 26 | 162 | Original baseline |
-| VibiumJavaApiTests | v26.5.31 | 136 | 0 | 26 | 162 | No regressions; SKIP annotations not yet updated in source |
+| VibiumJavaApiTests | v26.5.31 | 140 | 0 | 22 | 162 | B4/B5/B6 SKIP→PASS; src/→out/ compile structure |
 | VibiumBugHardening | v26.3.18 | — | — | — | 112 | 112 confirmed / 0 unexpected |
 | VibiumBugHardening | v26.5.31 | — | — | — | 112 | 52 confirmed / 60 unexpected passes (B4/B5/B6 fully fixed; B1/B2/B8/B9 partial) |
 

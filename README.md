@@ -29,31 +29,32 @@ curl -L -o gson-2.11.0.jar \
 
 ## Compile
 
+Sources live in `src/`; compiled classes go to `out/`:
 ```sh
-javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" \
+javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" -d out \
   src/VibiumJavaApiTests.java src/VibiumBugHardening.java src/NetworkDemo.java src/RouteDeadlockRepro.java
 ```
 
 ## Run
 
-**Full regression suite** (136 pass / 26 skip, ~3 min):
+**Full regression suite** (140 pass / 22 skip, ~3 min):
 ```sh
-PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumJavaApiTests
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumJavaApiTests
 ```
 
 **Bug hardening** — all 10 bugs × 6 sites (~15 min):
 ```sh
-PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening
 ```
 
 **Network demo** — injects a random kitten into all images on books.toscrape.com:
 ```sh
-PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" NetworkDemo
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" NetworkDemo
 ```
 
 **Route deadlock reproducer**:
 ```sh
-PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" RouteDeadlockRepro
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" RouteDeadlockRepro
 ```
 
 ## Coverage (VibiumJavaApiTests)
@@ -87,7 +88,7 @@ PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" Rout
 | Version | Suite | Pass | Fail | Skip | Total |
 |---|---|---|---|---|---|
 | v26.3.18 | VibiumJavaApiTests | 136 | 0 | 26 | 162 |
-| v26.5.31 | VibiumJavaApiTests | 136 | 0 | 26 | 162 |
+| v26.5.31 | VibiumJavaApiTests | 140 | 0 | 22 | 162 |
 | v26.3.18 | VibiumBugHardening | 112 confirmed | 0 unexpected | — | 112 probes |
 | v26.5.31 | VibiumBugHardening | 52 confirmed | 60 unexpected passes | — | 112 probes |
 
@@ -106,4 +107,4 @@ PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" Rout
 | B9 | `clock.setFixedTime()` / `pauseAt()` / `setSystemTime()` / `ClockOptions.time()` | PARTIAL (#137/#167) | ISO-8601 and epoch-ms accepted; human-readable `"Month DD, YYYY"` unsupported; `ClockOptions.time()` value still ignored (off by 1 year) |
 | B10 | `page.setHeaders()` | DEFERRED (#128) | Threading deadlock; same root cause as route/dialog deadlock |
 
-**Note:** `VibiumJavaApiTests.java` source still contains SKIP annotations for B4, B5, B6 — these need updating to reflect the fixes. Expected new baseline after source update: ~141 PASS / 0 FAIL / ~21 SKIP.
+B4, B5, B6 SKIP annotations removed — tests now active and passing.

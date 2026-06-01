@@ -332,15 +332,32 @@ public class VibiumJavaApiTests {
             page.setContent("<html><body style='height:3000px'><p style='margin-top:2000px' id='far'>far</p></body></html>");
             page.find("#far").scrollIntoView();
         });
-        skip("el.dispatchEvent() click fires handler", "BUG: onclick and addEventListener both unresponsive to dispatchEvent; el.click() works for real clicks — issue #132");
-        skip("el.dispatchEvent() click fires addEventListener", "BUG: same root cause as above — issue #132");
+        test("el.dispatchEvent() click fires handler", () -> {
+            page.setContent("<html><body><div id='ev' onclick=\"this.textContent='clicked'\">x</div></body></html>");
+            page.find("#ev").dispatchEvent("click");
+            assertEquals("clicked", page.find("#ev").text());
+        });
+        test("el.dispatchEvent() click fires addEventListener", () -> {
+            page.setContent("<html><body><div id='ev'>x</div></body></html>");
+            page.evaluate("document.getElementById('ev').addEventListener('click',()=>document.getElementById('ev').textContent='listener')");
+            page.find("#ev").dispatchEvent("click");
+            assertEquals("listener", page.find("#ev").text());
+        });
         test("el.dispatchEvent(type, data) does not throw", () -> {
             page.setContent("<html><body><div id='ev'>x</div></body></html>");
             page.evaluate("document.getElementById('ev').addEventListener('custom',e=>document.getElementById('ev').textContent='data')");
             page.find("#ev").dispatchEvent("custom", Map.of("detail", Map.of("val", "ok")));
         });
-        skip("el.highlight()", "BUG: Unknown command 'vibium:element.highlight' — issue #133");
-        skip("el.dragTo(target)", "BUG: 'dragTo requires target parameter' despite correct Element arg — issue #134");
+        test("el.highlight()", () -> {
+            page.setContent("<html><body><button id='hl'>highlight me</button></body></html>");
+            page.find("#hl").highlight();
+        });
+        test("el.dragTo(target)", () -> {
+            page.setContent("<html><body><div id='src' draggable='true'>drag</div><div id='dst'>drop</div></body></html>");
+            Element src = page.find("#src");
+            Element dst = page.find("#dst");
+            src.dragTo(dst);
+        });
         test("el.tap() does not throw", () -> {
             page.setContent("<html><body><button>tap me</button></body></html>");
             page.find("button").tap();
