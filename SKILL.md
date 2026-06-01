@@ -5,8 +5,12 @@ description: Run the Vibium Java API regression suite or bug hardening suite. Te
 
 # Vibium Java API Test Suite
 
-Tests all public methods in the Vibium Java language bindings (`com.vibium:vibium:26.3.18`).
+Tests all public methods in the Vibium Java language bindings (`com.vibium:vibium:26.5.31`).
 Two modes: full regression suite (`VibiumJavaApiTests`) and bug hardening across 6 sites (`VibiumBugHardening`).
+
+**v26.5.31 status:** 136 PASS / 0 FAIL / 26 SKIP (suite source not yet updated — B4/B5/B6 SKIP annotations still in code). Hardening: 52 confirmed / 60 unexpected passes. B4, B5, B6 fully fixed; B1, B2, B8, B9 partially fixed; B3, B7, B10 still broken.
+
+**macOS PATH note:** on macOS the Python vibium client can shadow the npm binary. Prefix PATH when running: `PATH="/usr/local/bin:$PATH" java -cp ...`
 
 ## Repository
 
@@ -25,14 +29,14 @@ cd ~/vibium-java-tests
 |---|---|
 | `VibiumJavaApiTests.java` | Main regression suite — 162 tests across 24 sections |
 | `VibiumBugHardening.java` | Hardens all 10 confirmed bugs across multiple sites/contexts |
-| `vibium-26.3.18.jar` | Vibium Java client (not committed — download from Maven Central) |
+| `vibium-26.5.31.jar` | Vibium Java client (not committed — download from Maven Central) |
 | `gson-2.11.0.jar` | JSON dependency (not committed — download from Maven Central) |
 
 ## Compile
 
 Check if `.class` files are present and newer than `.java` sources. If not, compile both:
 ```sh
-javac -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumJavaApiTests.java VibiumBugHardening.java
+javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" src/VibiumJavaApiTests.java src/VibiumBugHardening.java
 ```
 
 ## Sections covered (VibiumJavaApiTests)
@@ -68,18 +72,18 @@ javac -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumJavaApiTests.java VibiumB
 
 **Full regression suite:**
 ```sh
-java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumJavaApiTests
+PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumJavaApiTests
 ```
 
 **Bug hardening (all 10 bugs, 6 sites):**
 ```sh
-java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumBugHardening
+PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening
 ```
 
 **Single bug hardening (B1–B10):**
 Run VibiumBugHardening and filter output to that bug's section:
 ```sh
-java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumBugHardening 2>&1 | awk '/╔══ B<N>:/{p=1} /╔══ B/{if(p && !/B<N>:/)p=0} p'
+PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening 2>&1 | awk '/╔══ B<N>:/{p=1} /╔══ B/{if(p && !/B<N>:/)p=0} p'
 ```
 Replace `<N>` with the bug number (1–10).
 
@@ -118,27 +122,29 @@ Total confirmed: 105 / 105
 
 ## Known bugs (skipped in regression suite)
 
-| Bug | Method(s) | Error | Hardening probes |
+| Bug | Method(s) | v26.5.31 status | Notes |
 |---|---|---|---|
-| B1 | `page.waitForURL()` | "pattern is required" for all 8 format variants | 8/8 |
-| B2 | `page.addScript()` | script value null in all contexts (use `context.addInitScript()` instead) | 13/13 |
-| B3 | `page.waitForFunction()` | times out even for trivially-true expressions (`true`, `1+1===2`) | 12/12 |
-| B4 | `el.dispatchEvent()` | onclick and addEventListener both unresponsive; `el.click()` works | 11/11 |
-| B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" on all elements | 11/11 |
-| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct Element arg | 12/12 |
-| B7 | `page.expose()` | function is `undefined` in all page contexts after expose | 13/13 |
-| B8 | `onError()`, `collectErrors()` | uncaught errors never forwarded (setTimeout, script injection, Promise.reject, ErrorEvent) | 12/12 |
-| B9 | `clock.setFixedTime()`, `clock.pauseAt()`, `clock.setSystemTime()`, `ClockOptions.time()` | "time is required" for all string formats; ClockOptions.time() silently ignored | 13/13 |
-| B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as route issue #128 | 7/7 |
+| B1 | `page.waitForURL()` | **PARTIAL** (#129/#167) | URL/glob fixed; `**/*.html` (path-sep glob) and regex `.*x.*` still fail |
+| B2 | `page.addScript()` | **PARTIAL** (#130/#167) | `setContent→addScript→evaluate` works; `addScript→go()→evaluate` still null — use `context.addInitScript()` for cross-navigation persistence |
+| B3 | `page.waitForFunction()` | **STILL BROKEN** | Engine fix (#163) landed but Java client pre-wraps bare expressions before sending, conflicting with engine wrap → `SyntaxError: Unexpected token ')'`; not addressed in #167 |
+| B4 | `el.dispatchEvent()` | **FIXED** ✓ (#132/#167) | `eventType` param key fix; all 11 hardening probes PASS |
+| B5 | `el.highlight()` | **FIXED** ✓ (#133/#167) | Engine command implemented; all 11 probes PASS |
+| B6 | `el.dragTo(Element)` | **FIXED** ✓ (#134/#167) | Nested `target` param fix; "requires target parameter" error gone; 3 residual failures are site-specific element issues (zero size, obscured), not B6 |
+| B7 | `page.expose()` | **DEFERRED** (#135) | Java `Function` callback incompatible with engine's fn-string injection; needs API redesign |
+| B8 | `onError()`, `collectErrors()` | **PARTIAL** (#136/#167) | `setTimeout`/dynamic script errors forwarded; `window.ErrorEvent` dispatch and unhandled Promise rejection not captured (different BiDi event types) |
+| B9 | `clock.setFixedTime()`, `clock.pauseAt()`, `clock.setSystemTime()`, `ClockOptions.time()` | **PARTIAL** (#137/#167) | ISO-8601 and epoch-ms strings accepted; human-readable `"Month DD, YYYY"` intentionally unsupported; `ClockOptions.time()` value still ignored (off by 1 year) — genuine remaining bug |
+| B10 | `page.setHeaders()` | **DEFERRED** (#128) | Threading deadlock; same root cause as route/dialog deadlock |
+
+**Suite source update needed:** `VibiumJavaApiTests.java` still has SKIP annotations for B4, B5, B6 — these should be converted to active tests now that the bugs are fixed. Expected new baseline: ~141 PASS / 0 FAIL / ~21 SKIP.
 
 ## Baseline
 
-Confirmed across two independent runs:
-
-| Suite | Pass | Fail | Skip | Total |
-|---|---|---|---|---|
-| VibiumJavaApiTests | 136 | 0 | 26 | 162 |
-| VibiumBugHardening | 112 confirmed | 0 unexpected | — | 112 |
+| Suite | Version | Pass | Fail | Skip | Total | Notes |
+|---|---|---|---|---|---|---|
+| VibiumJavaApiTests | v26.3.18 | 136 | 0 | 26 | 162 | Original baseline |
+| VibiumJavaApiTests | v26.5.31 | 136 | 0 | 26 | 162 | No regressions; SKIP annotations not yet updated in source |
+| VibiumBugHardening | v26.3.18 | — | — | — | 112 | 112 confirmed / 0 unexpected |
+| VibiumBugHardening | v26.5.31 | — | — | — | 112 | 52 confirmed / 60 unexpected passes (B4/B5/B6 fully fixed; B1/B2/B8/B9 partial) |
 
 ## Input
 

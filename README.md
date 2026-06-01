@@ -1,57 +1,59 @@
 # vibium-java-tests
 
-Vibium Java API regression suite and bug hardening harness for [`com.vibium:vibium:26.3.18`](https://github.com/VibiumDev/vibium). No Maven, no Gradle — single-file Java, plain `javac` + `java`.
+Vibium Java API regression suite and bug hardening harness for [`com.vibium:vibium:26.5.31`](https://github.com/VibiumDev/vibium). No Maven, no Gradle — single-file Java, plain `javac` + `java`.
 
 ## Files
 
 | File | Description |
 |---|---|
-| `VibiumJavaApiTests.java` | Full API regression suite — 162 tests across 24 sections |
-| `VibiumBugHardening.java` | Hardens all 10 confirmed bugs across 6 sites and multiple page contexts |
-| `NetworkDemo.java` | Network module demo: fetches a kitten, injects it into all images on a page, saves a screenshot |
-| `RouteDeadlockRepro.java` | Minimal reproducer for the `page.route()` server deadlock ([issue #128](https://github.com/VibiumDev/vibium/issues/128)) |
-| `vibium-route-deadlock-bug.md` | Full bug report filed at VibiumDev/vibium#128 |
+| `src/VibiumJavaApiTests.java` | Full API regression suite — 162 tests across 24 sections |
+| `src/VibiumBugHardening.java` | Hardens all 10 confirmed bugs across 6 sites and multiple page contexts |
+| `src/NetworkDemo.java` | Network module demo: fetches a kitten, injects it into all images on a page, saves a screenshot |
+| `src/RouteDeadlockRepro.java` | Minimal reproducer for the `page.route()` server deadlock ([issue #128](https://github.com/VibiumDev/vibium/issues/128)) |
+| `bug-reports/` | Individual bug reports B1–B10 |
 
 ## Requirements
 
 - Java 21+
-- `vibium-26.3.18.jar` and `gson-2.11.0.jar` in the same directory (not committed — download below)
+- `vibium-26.5.31.jar` and `gson-2.11.0.jar` in the project root (not committed — download below)
 
 Download dependencies:
 ```sh
-curl -L -o vibium-26.3.18.jar \
-  https://repo1.maven.org/maven2/com/vibium/vibium/26.3.18/vibium-26.3.18.jar
+curl -L -o vibium-26.5.31.jar \
+  https://repo1.maven.org/maven2/com/vibium/vibium/26.5.31/vibium-26.5.31.jar
 curl -L -o gson-2.11.0.jar \
   https://repo1.maven.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar
 ```
 
+**macOS note:** the Python vibium client can shadow the npm binary in PATH. Prefix all commands with `PATH="/usr/local/bin:$PATH"` if you see `vibium process did not send ready signal`.
+
 ## Compile
 
 ```sh
-javac -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" \
-  VibiumJavaApiTests.java VibiumBugHardening.java NetworkDemo.java RouteDeadlockRepro.java
+javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" \
+  src/VibiumJavaApiTests.java src/VibiumBugHardening.java src/NetworkDemo.java src/RouteDeadlockRepro.java
 ```
 
 ## Run
 
 **Full regression suite** (136 pass / 26 skip, ~3 min):
 ```sh
-java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumJavaApiTests
+PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumJavaApiTests
 ```
 
-**Bug hardening** — all 10 bugs × 6 sites (112 confirmed, ~15 min):
+**Bug hardening** — all 10 bugs × 6 sites (~15 min):
 ```sh
-java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" VibiumBugHardening
+PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening
 ```
 
 **Network demo** — injects a random kitten into all images on books.toscrape.com:
 ```sh
-java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" NetworkDemo
+PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" NetworkDemo
 ```
 
 **Route deadlock reproducer**:
 ```sh
-java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" RouteDeadlockRepro
+PATH="/usr/local/bin:$PATH" java -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" RouteDeadlockRepro
 ```
 
 ## Coverage (VibiumJavaApiTests)
@@ -80,21 +82,28 @@ java -cp ".:vibium-26.3.18.jar:gson-2.11.0.jar" RouteDeadlockRepro
 | Scroll | 3 | `scroll`, direction options |
 | Page Misc | 11 | `id`, `bringToFront`, `sleep`, accessor methods, `removeAllListeners`, `setGeolocation` |
 
-**Baseline: 136 pass / 0 fail / 26 skip**
+## Baseline
 
-## Confirmed bugs (VibiumBugHardening)
+| Version | Suite | Pass | Fail | Skip | Total |
+|---|---|---|---|---|---|
+| v26.3.18 | VibiumJavaApiTests | 136 | 0 | 26 | 162 |
+| v26.5.31 | VibiumJavaApiTests | 136 | 0 | 26 | 162 |
+| v26.3.18 | VibiumBugHardening | 112 confirmed | 0 unexpected | — | 112 probes |
+| v26.5.31 | VibiumBugHardening | 52 confirmed | 60 unexpected passes | — | 112 probes |
 
-All 10 bugs reproduced across 6 sites (example.com, books.toscrape.com, httpbin.org, en.wikipedia.org, var.parts, testtrack.org) with zero unexpected passes.
+## Bug status (v26.5.31)
 
-| Bug | Method(s) | Error | Probes |
+| Bug | Method(s) | v26.5.31 status | Notes |
 |---|---|---|---|
-| B1 | `page.waitForURL()` | "pattern is required" — all format variants rejected | 8/8 |
-| B2 | `page.addScript()` | script `null` in all contexts; use `context.addInitScript()` | 13/13 |
-| B3 | `page.waitForFunction()` | times out even for `true` and `1+1===2` | 12/12 |
-| B4 | `el.dispatchEvent()` | `onclick` and `addEventListener` both unresponsive | 11/11 |
-| B5 | `el.highlight()` | "Unknown command 'vibium:element.highlight'" | 11/11 |
-| B6 | `el.dragTo(Element)` | "dragTo requires 'target' parameter" with correct arg | 12/12 |
-| B7 | `page.expose()` | function `undefined` in page JS context in all orderings | 13/13 |
-| B8 | `onError()` / `collectErrors()` | errors never forwarded — `setTimeout`, script injection, `Promise.reject`, `ErrorEvent` all miss | 12/12 |
-| B9 | `clock.setFixedTime()` / `pauseAt()` / `setSystemTime()` / `ClockOptions.time()` | "time is required" for all string formats | 13/13 |
-| B10 | `page.setHeaders()` | server deadlock on subsequent `page.go()` — same root cause as [#128](https://github.com/VibiumDev/vibium/issues/128) | 6/6 sites |
+| B1 | `page.waitForURL()` | PARTIAL (#129/#167) | URL/glob patterns fixed; `**/*.html` and regex still fail |
+| B2 | `page.addScript()` | PARTIAL (#130/#167) | `setContent→addScript→evaluate` works; `addScript→go()` still null — use `context.addInitScript()` for cross-navigation persistence |
+| B3 | `page.waitForFunction()` | STILL BROKEN | Engine fix (#163) landed but Java client pre-wraps bare expressions → `SyntaxError: Unexpected token ')'`; not fixed in #167 |
+| B4 | `el.dispatchEvent()` | **FIXED** ✓ (#132/#167) | All 11 hardening probes PASS |
+| B5 | `el.highlight()` | **FIXED** ✓ (#133/#167) | Engine command implemented; all 11 probes PASS |
+| B6 | `el.dragTo(Element)` | **FIXED** ✓ (#134/#167) | "requires target parameter" error gone; 3 residual failures are site-specific element issues |
+| B7 | `page.expose()` | DEFERRED (#135) | Java `Function` callback incompatible with engine's fn-string injection |
+| B8 | `onError()` / `collectErrors()` | PARTIAL (#136/#167) | `setTimeout`/dynamic script errors now forwarded; `window.ErrorEvent` and unhandled Promise rejection still not captured |
+| B9 | `clock.setFixedTime()` / `pauseAt()` / `setSystemTime()` / `ClockOptions.time()` | PARTIAL (#137/#167) | ISO-8601 and epoch-ms accepted; human-readable `"Month DD, YYYY"` unsupported; `ClockOptions.time()` value still ignored (off by 1 year) |
+| B10 | `page.setHeaders()` | DEFERRED (#128) | Threading deadlock; same root cause as route/dialog deadlock |
+
+**Note:** `VibiumJavaApiTests.java` source still contains SKIP annotations for B4, B5, B6 — these need updating to reflect the fixes. Expected new baseline after source update: ~141 PASS / 0 FAIL / ~21 SKIP.
