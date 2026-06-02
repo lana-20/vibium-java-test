@@ -1,4 +1,4 @@
-# vibium-java-tests
+# vibium-java-test
 
 Vibium Java API regression suite and bug hardening harness for [`com.vibium:vibium:26.5.31`](https://github.com/VibiumDev/vibium). No Maven, no Gradle — single-file Java, plain `javac` + `java`.
 

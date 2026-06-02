@@ -14,13 +14,13 @@ Two modes: full regression suite (`VibiumJavaApiTests`) and bug hardening across
 
 ## Repository
 
-[github.com/lana-20/vibium-java-tests](https://github.com/lana-20/vibium-java-tests)
+[github.com/lana-20/vibium-java-test](https://github.com/lana-20/vibium-java-test)
 
 ## Project directory
 
 All commands run from:
 ```sh
-cd ~/vibium-java-tests
+cd ~/vibium-java-test
 ```
 
 ## Files
