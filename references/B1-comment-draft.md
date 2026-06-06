@@ -40,19 +40,29 @@ Both patterns are accepted without error (no `"pattern is required"`), so the pa
 
 ## Reproducing
 
-**Option 1 — Claude Code skill** (recommended): install the [vibium-java-test](https://github.com/lana-20/vibium-java-test) regression skill and run:
+**Option 1 — Claude Code skill** (recommended)
 
+[vibium-java-test](https://github.com/lana-20/vibium-java-test) is a Claude Code skill — a slash command that handles compiling, running, and reporting in a single invocation.
+
+**Setup (once):**
+```sh
+git clone https://github.com/lana-20/vibium-java-test ~/vibium-java-test
+cp ~/vibium-java-test/SKILL.md ~/.claude/skills/vibium-java-test/SKILL.md
+# place vibium-26.5.31.jar and gson-2.11.0.jar in ~/vibium-java-test/
+```
+
+**Reproduce B1:**
 ```
 /vibium-java-test harden B1
 ```
 
-This runs the full B1 hardening suite (all pattern variants) and prints a result line per probe. See the [skill README](https://github.com/lana-20/vibium-java-test/blob/main/README.md) for setup instructions.
+This runs all 7 pattern variants and prints a result line per probe. Any pattern that still fails will show `BUG timeout`.
 
 **Option 2 — direct Java:**
 ```sh
 git clone https://github.com/lana-20/vibium-java-test ~/vibium-java-test
 cd ~/vibium-java-test
-# place vibium-26.5.31.jar and gson-2.11.0.jar in this directory, then:
+# place vibium-26.5.31.jar and gson-2.11.0.jar here, then:
 javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" -d out src/VibiumJavaApiTests.java src/VibiumBugHardening.java
 PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening B1
 ```

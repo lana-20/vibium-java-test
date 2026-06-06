@@ -38,19 +38,29 @@ The broken cases cover the scenario where `addScript` is expected to behave like
 
 ## Reproducing
 
-**Option 1 — Claude Code skill** (recommended): install the [vibium-java-test](https://github.com/lana-20/vibium-java-test) regression skill and run:
+**Option 1 — Claude Code skill** (recommended)
 
+[vibium-java-test](https://github.com/lana-20/vibium-java-test) is a Claude Code skill — a slash command that handles compiling, running, and reporting in a single invocation.
+
+**Setup (once):**
+```sh
+git clone https://github.com/lana-20/vibium-java-test ~/vibium-java-test
+cp ~/vibium-java-test/SKILL.md ~/.claude/skills/vibium-java-test/SKILL.md
+# place vibium-26.5.31.jar and gson-2.11.0.jar in ~/vibium-java-test/
+```
+
+**Reproduce B2:**
 ```
 /vibium-java-test harden B2
 ```
 
-This runs all B2 orderings across 6 sites and prints a result line per probe. See the [skill README](https://github.com/lana-20/vibium-java-test/blob/main/README.md) for setup instructions.
+This runs all 3 invocation orderings across 6 sites and prints a result line per probe. Broken orderings show `BUG got: null`.
 
 **Option 2 — direct Java:**
 ```sh
 git clone https://github.com/lana-20/vibium-java-test ~/vibium-java-test
 cd ~/vibium-java-test
-# place vibium-26.5.31.jar and gson-2.11.0.jar in this directory, then:
+# place vibium-26.5.31.jar and gson-2.11.0.jar here, then:
 javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" -d out src/VibiumJavaApiTests.java src/VibiumBugHardening.java
 PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening B2
 ```
