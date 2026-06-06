@@ -1,6 +1,6 @@
 ---
 name: vibium-java-test
-description: Run the Vibium Java API regression suite or bug hardening suite. Tests all public methods across Page, Element, Browser, BrowserContext, Keyboard, Mouse, Touch, Clock, and Dialog APIs using a no-build-tool single-file Java runner. Labels each test PASS/FAIL/SKIP with known-bug notes.
+description: Run the Vibium Java API regression suite, reproduce a specific bug (B1–B10), or run the full bug hardening suite. Tests all public methods across Page, Element, Browser, BrowserContext, Keyboard, Mouse, Touch, Clock, and Dialog APIs. Labels each test PASS/FAIL/SKIP with known-bug notes.
 ---
 
 # Vibium Java API Test Suite
@@ -212,9 +212,23 @@ bare after go [var.parts]                     BUG  SyntaxError: Unexpected token
 bare after go [testtrack.org]                 BUG  SyntaxError: Unexpected token ')'
 ```
 
+## Bug Reproduction
+
+To reproduce a specific bug, use `harden B<n>`. This runs only that bug's probes and prints a result line per variant:
+
+| Invocation | What it does |
+|---|---|
+| `/vibium-java-test harden B1` | Reproduce `waitForURL` — tests 7 pattern variants, reports which still fail |
+| `/vibium-java-test harden B2` | Reproduce `addScript` — tests 3 invocation orderings across 6 sites |
+| `/vibium-java-test harden B3` | Reproduce `waitForFunction` — tests bare + lambda expressions across 6 sites |
+| `/vibium-java-test harden B8` | Reproduce `onError` — tests 4 error sources (setTimeout, script, ErrorEvent, Promise.reject) |
+| `/vibium-java-test harden B9` | Reproduce clock time — tests setFixedTime/pauseAt/setSystemTime/ClockOptions.time |
+
+Bug reports and comment drafts are in `references/`. Each report includes the exact error, root cause, and workaround.
+
 ## Input
 
-If the user passes `harden`, run VibiumBugHardening.
-If the user passes `harden B<n>` (e.g. `harden B4`), run VibiumBugHardening and show only that bug's section.
+If the user passes `harden`, run VibiumBugHardening (all bugs).
+If the user passes `harden B<n>` (e.g. `harden B3`), run VibiumBugHardening with that bug number — reproduces only that bug's probes.
 If the user passes a section name (e.g. `dialog`, `clock`, `network`), run VibiumJavaApiTests and highlight that section's output.
 If no argument, run VibiumJavaApiTests and produce the full summary.
