@@ -146,6 +146,47 @@ B4, B5, B6 SKIP annotations removed — tests now active and passing.
 | VibiumBugHardening | v26.3.18 | — | — | — | 112 | 112 confirmed / 0 unexpected |
 | VibiumBugHardening | v26.5.31 | — | — | — | 112 | 52 confirmed / 60 unexpected passes (B4/B5/B6 fully fixed; B1/B2/B8/B9 partial) |
 
+## Last Run Results
+
+**Run date:** 2026-06-06 · **vibium:** v26.5.31 · **140 PASS · 0 FAIL · 22 SKIP**
+
+```
+Section              Total  Pass  Fail  Skip  Notes
+─────────────────────────────────────────────────────────────────
+Navigation           9      8     0     1     waitForURL (#129, partial fix)
+Content & Scripting  2      1     0     1     addScript (#130, partial fix)
+Evaluate             8      8     0     0
+Find / FindAll       10     7     0     3     findAll timeout; waitForFunction ×2 (#131, Java client conflict)
+Element State        21     21    0     0
+Element Actions      18     18    0     0     B4/B5/B6 all PASS
+Keyboard             3      3     0     0
+Mouse                5      5     0     0
+Touch                1      1     0     0
+Dialog               7      7     0     0
+Console Events       3      3     0     0
+Error Events         2      0     0     2     onError/collectErrors (#136, partial fix)
+Network Listeners    7      6     0     1     setHeaders (#128, deferred)
+Route                7      0     0     7     deadlock (#128, deferred)
+Screenshot           4      4     0     0
+PDF                  1      1     0     0
+Viewport & Window    5      5     0     0
+Accessibility        5      5     0     0
+Clock                8      4     0     4     setFixedTime/pauseAt/setSystemTime/ClockOptions.time (#137, partial fix)
+BrowserContext       9      9     0     0
+Multi-Page           7      7     0     0
+Expose               3      0     0     3     expose() (#135, deferred)
+Scroll               3      3     0     0
+Page Misc            11     11    0     0
+─────────────────────────────────────────────────────────────────
+TOTAL                162    140   0     22
+```
+
+**Release note verification (v26.5.31):** All 22 SKIPs confirmed valid.
+- B1/B2/B8/B9: release claims fixed — actual fix is partial; our tests target remaining broken paths
+- B3 (waitForFunction): engine fix landed (#163) but Java client pre-wraps bare expressions → `SyntaxError`; not addressed in #167
+- B7/B10: deferred in release notes — SKIPs correct
+- B4/B5/B6: fully fixed — SKIP annotations removed, all PASS
+
 ## Input
 
 If the user passes `harden`, run VibiumBugHardening.
