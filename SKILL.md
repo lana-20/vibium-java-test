@@ -182,9 +182,29 @@ TOTAL                162    140   0     22
 
 **Release note verification (v26.5.31):** All 22 SKIPs confirmed valid.
 - B1/B2/B8/B9: release claims fixed — actual fix is partial; our tests target remaining broken paths
-- B3 (waitForFunction): engine fix landed (#163) but Java client pre-wraps bare expressions → `SyntaxError`; not addressed in #167
+- B3 (waitForFunction): engine fix landed (#163) but Java client wraps ALL expressions (bare + lambda) → double-wrap → `SyntaxError: Unexpected token ')'`; 15/15 probes confirm across 6 sites; not addressed in #167
 - B7/B10: deferred in release notes — SKIPs correct
 - B4/B5/B6: fully fixed — SKIP annotations removed, all PASS
+
+**B3 hardening run (2026-06-06):** `VibiumBugHardening B3` · **15 confirmed · 0 unexpected**
+
+```
+bare: true                                    BUG  SyntaxError: Unexpected token ')'
+bare: 1 + 1 === 2                             BUG  SyntaxError: Unexpected token ')'
+bare: typeof document !== 'undefined'         BUG  SyntaxError: Unexpected token ')'
+bare: document.readyState === 'complete'      BUG  SyntaxError: Unexpected token ')'
+bare: window !== undefined                    BUG  SyntaxError: Unexpected token ')'
+lambda-wrapped: () => true                    BUG  SyntaxError: Unexpected token ')'
+lambda-wrapped: () => document.readyState…   BUG  SyntaxError: Unexpected token ')'
+lambda-wrapped: () => window.__wff === true   BUG  SyntaxError: Unexpected token ')'
+evaluate sets flag → waitForFunction bare     BUG  SyntaxError: Unexpected token ')'
+bare after go [example.com]                   BUG  SyntaxError: Unexpected token ')'
+bare after go [books.toscrape.com]            BUG  SyntaxError: Unexpected token ')'
+bare after go [httpbin.org]                   BUG  SyntaxError: Unexpected token ')'
+bare after go [en.wikipedia.org]              BUG  SyntaxError: Unexpected token ')'
+bare after go [var.parts]                     BUG  SyntaxError: Unexpected token ')'
+bare after go [testtrack.org]                 BUG  SyntaxError: Unexpected token ')'
+```
 
 ## Input
 
