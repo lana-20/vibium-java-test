@@ -25,10 +25,16 @@ cd ~/vibium-java-test
 
 ## Files
 
-| File | Purpose |
+| Path | Purpose |
 |---|---|
-| `VibiumJavaApiTests.java` | Main regression suite — 162 tests across 24 sections |
-| `VibiumBugHardening.java` | Hardens all 10 confirmed bugs across multiple sites/contexts |
+| `src/VibiumJavaApiTests.java` | Main regression suite — 162 tests across 24 sections |
+| `src/VibiumBugHardening.java` | Hardens all 10 confirmed bugs across multiple sites/contexts |
+| `src/B3Repro.java` | Minimal standalone repro for B3 |
+| `scripts/compile.sh` | Compile all sources into `out/` |
+| `scripts/run-suite.sh` | Run VibiumJavaApiTests |
+| `scripts/run-harden.sh` | Run VibiumBugHardening (accepts optional B1–B10 arg) |
+| `references/` | Bug reports B1–B10 and comment drafts for reopening |
+| `assets/report-template.md` | Blank results report template |
 | `vibium-26.5.31.jar` | Vibium Java client (not committed — download from Maven Central) |
 | `gson-2.11.0.jar` | JSON dependency (not committed — download from Maven Central) |
 

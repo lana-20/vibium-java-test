@@ -10,7 +10,8 @@ Vibium Java API regression suite and bug hardening harness for [`com.vibium:vibi
 | `src/VibiumBugHardening.java` | Hardens all 10 confirmed bugs across 6 sites and multiple page contexts |
 | `src/NetworkDemo.java` | Network module demo: fetches a kitten, injects it into all images on a page, saves a screenshot |
 | `src/RouteDeadlockRepro.java` | Minimal reproducer for the `page.route()` server deadlock ([issue #128](https://github.com/VibiumDev/vibium/issues/128)) |
-| `bug-reports/` | Individual bug reports B1–B10 |
+| `references/` | Bug reports B1–B10 and comment drafts for reopening |
+| `scripts/` | Shell wrappers: `compile.sh`, `run-suite.sh`, `run-harden.sh` |
 
 ## Requirements
 
