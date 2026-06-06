@@ -143,32 +143,23 @@ while (!(Boolean) page.evaluate("document.readyState === 'complete'")) {
 
 The full reproduction suite is available at **[github.com/lana-20/vibium-java-test](https://github.com/lana-20/vibium-java-test)**.
 
-### Setup
+### Option 1 — Claude Code skill (one command)
 
+[vibium-java-test](https://github.com/lana-20/vibium-java-test) is a Claude Code skill — a slash command that handles cloning, compiling, running, and reporting in a single invocation. No manual setup required beyond placing the JARs.
+
+**Setup (once):**
 ```sh
 git clone https://github.com/lana-20/vibium-java-test ~/vibium-java-test
-cd ~/vibium-java-test
-
-# Place vibium-26.5.31.jar and gson-2.11.0.jar in this directory, then:
-javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" -d out \
-  src/VibiumJavaApiTests.java src/VibiumBugHardening.java src/B3Repro.java
+cp ~/vibium-java-test/SKILL.md ~/.claude/skills/vibium-java-test/SKILL.md
+# place vibium-26.5.31.jar and gson-2.11.0.jar in ~/vibium-java-test/
 ```
 
-### Run the minimal repro (fastest)
-
-```sh
-PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" B3Repro
+**Reproduce B3:**
+```
+/vibium-java-test harden B3
 ```
 
-### Run the full B3 hardening suite (15 probes — bare, lambda, flag, 6 sites)
-
-```sh
-PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening B3
-```
-
-`VibiumBugHardening` accepts a bug number argument (`B1`–`B10`) to run only that section. Omit it to run all 10 bugs.
-
-### Expected output
+This compiles all sources and runs only the B3 probes (15 total — bare expressions, lambda-wrapped expressions, flag-via-evaluate, and cross-site variants across 6 pages). Output:
 
 ```
 ╔══ B3: page.waitForFunction() … ══╗
@@ -192,6 +183,25 @@ PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" Vi
   Bug reproductions confirmed: 15
   Unexpected results:          0
 ========================================================================
+```
+
+The skill also supports other bugs: `/vibium-java-test harden B1` through `/vibium-java-test harden B10`. Omit the bug number to run all 10.
+
+### Option 2 — minimal repro (no skill)
+
+```sh
+git clone https://github.com/lana-20/vibium-java-test ~/vibium-java-test
+cd ~/vibium-java-test
+# place vibium-26.5.31.jar and gson-2.11.0.jar here, then:
+javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" -d out src/B3Repro.java
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" B3Repro
+```
+
+### Option 3 — full harness (no skill)
+
+```sh
+javac -cp ".:vibium-26.5.31.jar:gson-2.11.0.jar" -d out src/VibiumJavaApiTests.java src/VibiumBugHardening.java
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening B3
 ```
 
 Results on v26.5.31: **15 confirmed / 0 unexpected** (2026-06-06).
