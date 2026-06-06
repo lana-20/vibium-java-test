@@ -81,11 +81,10 @@ PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" Vi
 ```
 
 **Single bug hardening (B1–B10):**
-Run VibiumBugHardening and filter output to that bug's section:
 ```sh
-PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening 2>&1 | awk '/╔══ B<N>:/{p=1} /╔══ B/{if(p && !/B<N>:/)p=0} p'
+PATH="/usr/local/bin:$PATH" java -cp "out:vibium-26.5.31.jar:gson-2.11.0.jar" VibiumBugHardening B3
 ```
-Replace `<N>` with the bug number (1–10).
+Replace `B3` with `B1`–`B10`. Only that bug's section runs.
 
 ## Reporting
 
@@ -126,7 +125,7 @@ Total confirmed: 105 / 105
 |---|---|---|---|
 | B1 | `page.waitForURL()` | **PARTIAL** (#129/#167) | URL/glob fixed; `**/*.html` (path-sep glob) and regex `.*x.*` still fail |
 | B2 | `page.addScript()` | **PARTIAL** (#130/#167) | `setContent→addScript→evaluate` works; `addScript→go()→evaluate` still null — use `context.addInitScript()` for cross-navigation persistence |
-| B3 | `page.waitForFunction()` | **STILL BROKEN** | Engine fix (#163) landed but Java client pre-wraps bare expressions before sending, conflicting with engine wrap → `SyntaxError: Unexpected token ')'`; not addressed in #167 |
+| B3 | `page.waitForFunction()` | **STILL BROKEN** | Java client wraps ALL expressions (bare and lambda) before sending → engine double-wraps → `SyntaxError: Unexpected token ')'`; confirmed via B3Repro.java (2026-06-06); not addressed in #167 |
 | B4 | `el.dispatchEvent()` | **FIXED** ✓ (#132/#167) | `eventType` param key fix; all 11 hardening probes PASS |
 | B5 | `el.highlight()` | **FIXED** ✓ (#133/#167) | Engine command implemented; all 11 probes PASS |
 | B6 | `el.dragTo(Element)` | **FIXED** ✓ (#134/#167) | Nested `target` param fix; "requires target parameter" error gone; 3 residual failures are site-specific element issues (zero size, obscured), not B6 |

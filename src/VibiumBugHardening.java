@@ -41,19 +41,20 @@ public class VibiumBugHardening {
     @FunctionalInterface interface Thunk { void run() throws Exception; }
 
     public static void main(String[] args) throws Exception {
+        String filter = args.length > 0 ? args[0].toUpperCase() : null;
         bro = Vibium.start(new StartOptions().headless(true));
         page = bro.page();
         try {
-            hardenB1_waitForURL();
-            hardenB2_addScript();
-            hardenB3_waitForFunction();
-            hardenB4_dispatchEvent();
-            hardenB5_highlight();
-            hardenB6_dragTo();
-            hardenB7_expose();
-            hardenB8_onError();
-            hardenB9_clockTime();
-            hardenB10_setHeaders();
+            if (filter == null || filter.equals("B1"))  hardenB1_waitForURL();
+            if (filter == null || filter.equals("B2"))  hardenB2_addScript();
+            if (filter == null || filter.equals("B3"))  hardenB3_waitForFunction();
+            if (filter == null || filter.equals("B4"))  hardenB4_dispatchEvent();
+            if (filter == null || filter.equals("B5"))  hardenB5_highlight();
+            if (filter == null || filter.equals("B6"))  hardenB6_dragTo();
+            if (filter == null || filter.equals("B7"))  hardenB7_expose();
+            if (filter == null || filter.equals("B8"))  hardenB8_onError();
+            if (filter == null || filter.equals("B9"))  hardenB9_clockTime();
+            if (filter == null || filter.equals("B10")) hardenB10_setHeaders();
         } finally {
             try { bro.stop(); } catch (Exception ignored) {}
         }
@@ -131,9 +132,9 @@ public class VibiumBugHardening {
     // ── B3: page.waitForFunction() ──────────────────────────────────────────
 
     static void hardenB3_waitForFunction() throws Exception {
-        bug("B3", "page.waitForFunction() — times out for all expressions (issue #131)");
+        bug("B3", "page.waitForFunction() — Java client wraps ALL expressions (bare and lambda) before sending; engine double-wraps → SyntaxError: Unexpected token ')' (issue #131/#163)");
 
-        String[] exprs = {
+        String[] bareExprs = {
             "true",
             "1 + 1 === 2",
             "typeof document !== 'undefined'",
@@ -141,24 +142,40 @@ public class VibiumBugHardening {
             "window !== undefined"
         };
 
-        // Already-true expressions (no async needed)
-        for (String expr : exprs) {
-            probe("already-true: " + expr, () -> {
+        // Bare expressions — expected to fail with SyntaxError from double-wrap
+        for (String expr : bareExprs) {
+            final String e = expr;
+            probe("bare: " + expr, () -> {
                 page.setContent("<html><body></body></html>");
-                page.waitForFunction(expr, new WaitOptions().timeout(3000));
+                page.waitForFunction(e, new WaitOptions().timeout(3000));
             }, true);
         }
 
-        // Async expression via evaluate then waitForFunction
-        probe("evaluate sets flag → waitForFunction checks it", () -> {
+        // Lambda-wrapped expressions — also fail: Java client wraps () => expr into () => () => expr → SyntaxError
+        String[] lambdaExprs = {
+            "() => true",
+            "() => document.readyState === 'complete'",
+            "() => window.__wff === true"
+        };
+        for (String expr : lambdaExprs) {
+            final String e = expr;
+            probe("lambda-wrapped: " + expr, () -> {
+                page.setContent("<html><body></body></html>");
+                if (expr.contains("__wff")) page.evaluate("window.__wff = true");
+                page.waitForFunction(e, new WaitOptions().timeout(3000));
+            }, true);  // expectBug=true — Java wraps ALL expressions, including lambdas → double-wrap
+        }
+
+        // Async flag via evaluate then waitForFunction (bare)
+        probe("evaluate sets flag → waitForFunction bare check", () -> {
             page.setContent("<html><body></body></html>");
             page.evaluate("window.__wff = true");
             page.waitForFunction("window.__wff === true", new WaitOptions().timeout(3000));
         }, true);
 
-        // Across different sites
+        // Cross-site: bare expression across all 6 sites
         for (String site : SITES) {
-            probe("already-true after go [" + domain(site) + "]", () -> {
+            probe("bare after go [" + domain(site) + "]", () -> {
                 page.go(site);
                 page.waitForFunction("document.readyState === 'complete'", new WaitOptions().timeout(5000));
             }, true);
