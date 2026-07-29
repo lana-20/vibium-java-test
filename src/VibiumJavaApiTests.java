@@ -101,7 +101,10 @@ public class VibiumJavaApiTests {
         test("evaluate number", () -> assertEquals(7.0, num(page.evaluate("3+4"))));
         test("evaluate boolean true", () -> assertEquals(true, page.evaluate("true")));
         test("evaluate boolean false", () -> assertEquals(false, page.evaluate("false")));
-        test("evaluate null", () -> assertEquals(null, page.evaluate("null")));
+        // JSON.stringify so a genuine null returns the STRING "null". The client swallows
+        // JS exceptions and returns null (upstream #221), so assertEquals(null, evaluate("null"))
+        // would pass just as readily if the evaluate had thrown.
+        test("evaluate null", () -> assertEquals("null", page.evaluate("JSON.stringify(null)")));
         test("evaluate DOM query", () -> {
             page.setContent("<html><body><p id='x'>txt</p></body></html>");
             assertEquals("txt", page.evaluate("document.getElementById('x').textContent"));
